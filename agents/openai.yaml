@@ -1,0 +1,4 @@
+interface:
+  display_name: "飞书项目同步 Linear"
+  short_description: "配置飞书项目经多维表格同步到 Linear，排查漏同步并安全补同步"
+  default_prompt: "使用 $feishu-project-linear-sync 配置或排查飞书项目到 Linear 的同步，只处理指定负责人的任务。"

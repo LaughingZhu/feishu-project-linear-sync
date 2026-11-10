@@ -1,0 +1,4048 @@
+{
+  "task-inbound": {
+    "title": "需求子任务校验入表（仅指定负责人）",
+    "steps": [
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "enable_bearer_check": false,
+          "output_json": "{\"header\": {\"event_type\": \"TaskCreateEvent\", \"operator\": \"{{owner_key}}\", \"token\": \"sample-only\", \"uuid\": \"test-schema\"}, \"payload\": {\"task_id\": 1001, \"task_name\": \"[TEST] 同步验证\", \"project_key\": \"{{project_key}}\", \"work_item_id\": 101, \"work_item_name\": \"示例需求\", \"work_item_type\": \"story\", \"relate_state_id\": \"example-node\", \"relate_state_name\": \"研发\", \"created_at\": 1700000000000, \"updated_at\": 1700000000000, \"cur_status\": 0, \"api_owners_schedule\": {\"owners\": [\"{{owner_key}}\"]}, \"task_owners\": [{\"id\": 1001, \"name\": \"[TEST] 同步验证\", \"add_owners\": [], \"delete_owners\": [\"{{owner_key}}\"]}]}}"
+        },
+        "id": "trigPuaB9vaX",
+        "next": "branchDfUfenzl",
+        "title": "接收到 Webhook 时",
+        "type": "WebhookTrigger"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "branchDfUfenzl",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "eventDispatch"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.payload.project_key",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "{{project_key}}",
+                            "value_type": "text"
+                          }
+                        ]
+                      },
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.header.token",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value_type": "text",
+                            "value": "YOUR_FEISHU_BODY_TOKEN"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "branchDfUfenzl"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "branchDfUfenzl",
+        "title": "branchDfUfenzl",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "创建",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "systemibdy3jk0"
+            },
+            {
+              "desc": "TaskUpdateEventrename",
+              "kind": "case",
+              "label": "branch_2",
+              "to": "renameFind"
+            },
+            {
+              "desc": "TaskDeleteEventdelete",
+              "kind": "case",
+              "label": "branch_3",
+              "to": "deleteFind"
+            },
+            {
+              "desc": "TaskStatusEventdone",
+              "kind": "case",
+              "label": "branch_4",
+              "to": "doneFind"
+            },
+            {
+              "desc": "TaskStatusEventtodo",
+              "kind": "case",
+              "label": "branch_5",
+              "to": "todoFind"
+            },
+            {
+              "desc": "负责人变更",
+              "kind": "case",
+              "label": "branch_6",
+              "to": "ownerLoop"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.header.event_type",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "TaskCreateEvent",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "创建"
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.header.event_type",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "TaskUpdateEvent",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "TaskUpdateEventrename"
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.header.event_type",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "TaskDeleteEvent",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "TaskDeleteEventdelete"
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.header.event_type",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "TaskStatusEvent",
+                            "value_type": "text"
+                          }
+                        ]
+                      },
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.payload.cur_status",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 2,
+                            "value_type": "number"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "TaskStatusEventdone"
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.header.event_type",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "TaskStatusEvent",
+                            "value_type": "text"
+                          }
+                        ]
+                      },
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.payload.cur_status",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 1,
+                            "value_type": "number"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "TaskStatusEventtodo"
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.trigPuaB9vaX.body.header.event_type",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "WorkitemPersonAssignedEvent",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "负责人变更"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "eventDispatch",
+        "title": "eventDispatch",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "kind": "loop_start",
+              "to": "branchDu8HIBiT"
+            }
+          ]
+        },
+        "data": {
+          "data": [
+            {
+              "value": "$.trigPuaB9vaX.body.payload.api_owners_schedule.owners",
+              "value_type": "ref"
+            }
+          ],
+          "loop_mode": "end",
+          "loop_type": "forEach",
+          "max_loop_times": 1000
+        },
+        "id": "systemibdy3jk0",
+        "title": "循环",
+        "type": "Loop"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "分支 1",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "actSkeJ9WF4"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.systemibdy3jk0.item",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "{{owner_key}}",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "分支 1"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "branchDu8HIBiT",
+        "title": "多分支（Switch）",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_names": [
+            "来源唯一键"
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.task_id",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "ref_info": null,
+          "should_proceed_when_no_results": true,
+          "table_name": "{{table_name}}"
+        },
+        "id": "actSkeJ9WF4",
+        "next": "branchyh3gQYf0",
+        "title": "查找记录",
+        "type": "FindRecordAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "分支 1",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "actoixkK2yj"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.actSkeJ9WF4.recordNum",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 0,
+                            "value_type": "number"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "分支 1"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "branchyh3gQYf0",
+        "title": "多分支（Switch）",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "来源唯一键",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.project_key",
+                  "value_type": "ref"
+                },
+                {
+                  "value": ":task:",
+                  "value_type": "text"
+                },
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.task_id",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "任务标题",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.task_name",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "飞书任务 ID",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.task_id",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "飞书空间 Key",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.project_key",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "负责人 Key",
+              "value": [
+                {
+                  "value": "{{owner_key}}",
+                  "value_type": "text"
+                }
+              ]
+            },
+            {
+              "field_name": "负责人有效",
+              "value": [
+                {
+                  "value": true,
+                  "value_type": "boolean"
+                }
+              ]
+            },
+            {
+              "field_name": "来源已删除",
+              "value": [
+                {
+                  "value": false,
+                  "value_type": "boolean"
+                }
+              ]
+            },
+            {
+              "field_name": "任务状态",
+              "value": [
+                {
+                  "value": "未完成",
+                  "value_type": "text"
+                }
+              ]
+            },
+            {
+              "field_name": "任务状态原始值",
+              "value": [
+                {
+                  "value": 1,
+                  "value_type": "number"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "待同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "最近事件 UUID",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.header.uuid",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "所属需求 ID",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.work_item_id",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "所属需求名称",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.work_item_name",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "所属节点 ID",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.relate_state_id",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "所属节点名称",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.relate_state_name",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近事件时间戳",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.created_at",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近名称事件时间戳",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.created_at",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近状态事件时间戳",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.created_at",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近负责人事件时间戳",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.created_at",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "飞书链接",
+              "value": [
+                {
+                  "value": {
+                    "link": [
+                      {
+                        "value": "{{parent_url_prefix}}",
+                        "value_type": "text"
+                      },
+                      {
+                        "value": "$.trigPuaB9vaX.body.payload.work_item_id",
+                        "value_type": "ref"
+                      }
+                    ],
+                    "text": [
+                      {
+                        "value": "飞书需求",
+                        "value_type": "text"
+                      }
+                    ]
+                  },
+                  "value_type": "link"
+                }
+              ]
+            },
+            {
+              "field_name": "Linear 创建已尝试",
+              "value": [
+                {
+                  "value": false,
+                  "value_type": "boolean"
+                }
+              ]
+            }
+          ],
+          "table_name": "{{table_name}}"
+        },
+        "id": "actoixkK2yj",
+        "title": "新增记录",
+        "type": "AddRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_names": [
+            "来源唯一键"
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.task_id",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "飞书空间 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{project_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{owner_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人有效",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": true,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "来源已删除",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": false,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近名称事件时间戳",
+                "operator": "isLess",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近负责人事件时间戳",
+                "operator": "isLessEqual",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "ref_info": null,
+          "should_proceed_when_no_results": true,
+          "table_name": "{{table_name}}"
+        },
+        "id": "renameFind",
+        "next": "renameOne",
+        "title": "renameFind",
+        "type": "FindRecordAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "renameOne",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "renameSet"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.renameFind.recordNum",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 1,
+                            "value_type": "number"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "renameOne"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "renameOne",
+        "title": "renameOne",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "任务标题",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.task_name",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近名称事件时间戳",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近事件 UUID",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.header.uuid",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "待同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            }
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.task_id",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "飞书空间 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{project_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{owner_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人有效",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": true,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "来源已删除",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": false,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近名称事件时间戳",
+                "operator": "isLess",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近负责人事件时间戳",
+                "operator": "isLessEqual",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "max_set_record_num": 1,
+          "ref_info": null,
+          "table_name": "{{table_name}}"
+        },
+        "id": "renameSet",
+        "title": "renameSet",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_names": [
+            "来源唯一键"
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.task_id",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "飞书空间 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{project_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{owner_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人有效",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": true,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "来源已删除",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": false,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近状态事件时间戳",
+                "operator": "isLess",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近负责人事件时间戳",
+                "operator": "isLessEqual",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "ref_info": null,
+          "should_proceed_when_no_results": true,
+          "table_name": "{{table_name}}"
+        },
+        "id": "deleteFind",
+        "next": "deleteOne",
+        "title": "deleteFind",
+        "type": "FindRecordAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "deleteOne",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "deleteSet"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.deleteFind.recordNum",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 1,
+                            "value_type": "number"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "deleteOne"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "deleteOne",
+        "title": "deleteOne",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "来源已删除",
+              "value": [
+                {
+                  "value": true,
+                  "value_type": "boolean"
+                }
+              ]
+            },
+            {
+              "field_name": "任务状态",
+              "value": [
+                {
+                  "value": "已删除",
+                  "value_type": "text"
+                }
+              ]
+            },
+            {
+              "field_name": "最近状态事件时间戳",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近事件 UUID",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.header.uuid",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "待同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            }
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.task_id",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "飞书空间 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{project_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{owner_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人有效",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": true,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "来源已删除",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": false,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近状态事件时间戳",
+                "operator": "isLess",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近负责人事件时间戳",
+                "operator": "isLessEqual",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "max_set_record_num": 1,
+          "ref_info": null,
+          "table_name": "{{table_name}}"
+        },
+        "id": "deleteSet",
+        "title": "deleteSet",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_names": [
+            "来源唯一键"
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.task_id",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "飞书空间 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{project_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{owner_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人有效",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": true,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "来源已删除",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": false,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近状态事件时间戳",
+                "operator": "isLess",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近负责人事件时间戳",
+                "operator": "isLessEqual",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "ref_info": null,
+          "should_proceed_when_no_results": true,
+          "table_name": "{{table_name}}"
+        },
+        "id": "doneFind",
+        "next": "doneOne",
+        "title": "doneFind",
+        "type": "FindRecordAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "doneOne",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "doneSet"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.doneFind.recordNum",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 1,
+                            "value_type": "number"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "doneOne"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "doneOne",
+        "title": "doneOne",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "任务状态",
+              "value": [
+                {
+                  "value": "已完成",
+                  "value_type": "text"
+                }
+              ]
+            },
+            {
+              "field_name": "任务状态原始值",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.cur_status",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近状态事件时间戳",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近事件 UUID",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.header.uuid",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "待同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            }
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.task_id",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "飞书空间 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{project_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{owner_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人有效",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": true,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "来源已删除",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": false,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近状态事件时间戳",
+                "operator": "isLess",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近负责人事件时间戳",
+                "operator": "isLessEqual",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "max_set_record_num": 1,
+          "ref_info": null,
+          "table_name": "{{table_name}}"
+        },
+        "id": "doneSet",
+        "title": "doneSet",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_names": [
+            "来源唯一键"
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.task_id",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "飞书空间 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{project_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{owner_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人有效",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": true,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "来源已删除",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": false,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近状态事件时间戳",
+                "operator": "isLess",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近负责人事件时间戳",
+                "operator": "isLessEqual",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "ref_info": null,
+          "should_proceed_when_no_results": true,
+          "table_name": "{{table_name}}"
+        },
+        "id": "todoFind",
+        "next": "todoOne",
+        "title": "todoFind",
+        "type": "FindRecordAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "todoOne",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "todoSet"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.todoFind.recordNum",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 1,
+                            "value_type": "number"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "todoOne"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "todoOne",
+        "title": "todoOne",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "任务状态",
+              "value": [
+                {
+                  "value": "未完成",
+                  "value_type": "text"
+                }
+              ]
+            },
+            {
+              "field_name": "任务状态原始值",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.cur_status",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近状态事件时间戳",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "最近事件 UUID",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.header.uuid",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "待同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            }
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.task_id",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "飞书空间 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{project_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{owner_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人有效",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": true,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "来源已删除",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": false,
+                    "value_type": "boolean"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近状态事件时间戳",
+                "operator": "isLess",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近负责人事件时间戳",
+                "operator": "isLessEqual",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "max_set_record_num": 1,
+          "ref_info": null,
+          "table_name": "{{table_name}}"
+        },
+        "id": "todoSet",
+        "title": "todoSet",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "kind": "loop_start",
+              "to": "ownerSet"
+            }
+          ]
+        },
+        "data": {
+          "data": [
+            {
+              "value": "$.trigPuaB9vaX.body.payload.task_owners",
+              "value_type": "ref"
+            }
+          ],
+          "loop_mode": "end",
+          "loop_type": "forEach",
+          "max_loop_times": 1000
+        },
+        "id": "ownerLoop",
+        "title": "ownerLoop",
+        "type": "Loop"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "负责人有效",
+              "value": [
+                {
+                  "value": false,
+                  "value_type": "boolean"
+                }
+              ]
+            },
+            {
+              "field_name": "最近负责人事件时间戳",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "停止同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "最近事件 UUID",
+              "value": [
+                {
+                  "value": "$.trigPuaB9vaX.body.header.uuid",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "负责人发生变更，暂停同步，请核对是否仍由指定负责人负责",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": {
+            "conditions": [
+              {
+                "field_name": "飞书任务 ID",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "$.ownerLoop.item.id",
+                    "value_type": "ref"
+                  }
+                ]
+              },
+              {
+                "field_name": "飞书空间 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{project_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "负责人 Key",
+                "operator": "is",
+                "value": [
+                  {
+                    "value": "{{owner_key}}",
+                    "value_type": "text"
+                  }
+                ]
+              },
+              {
+                "field_name": "最近负责人事件时间戳",
+                "operator": "isLess",
+                "value": [
+                  {
+                    "value": "$.trigPuaB9vaX.body.payload.updated_at",
+                    "value_type": "ref"
+                  }
+                ]
+              }
+            ],
+            "conjunction": "and"
+          },
+          "max_set_record_num": 1,
+          "ref_info": null,
+          "table_name": "{{table_name}}"
+        },
+        "id": "ownerSet",
+        "title": "ownerSet",
+        "type": "SetRecordAction"
+      }
+    ]
+  },
+  "task-outbound": {
+    "title": "需求任务创建与更新 Linear（仅指定负责人）",
+    "steps": [
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "condition_list": [
+            {
+              "conditions": [
+                {
+                  "field_name": "同步状态",
+                  "operator": "is",
+                  "value": [
+                    {
+                      "value": {
+                        "name": "待同步"
+                      },
+                      "value_type": "option"
+                    }
+                  ]
+                },
+                {
+                  "field_name": "负责人 Key",
+                  "operator": "is",
+                  "value": [
+                    {
+                      "value": "{{owner_key}}",
+                      "value_type": "text"
+                    }
+                  ]
+                },
+                {
+                  "field_name": "飞书空间 Key",
+                  "operator": "is",
+                  "value": [
+                    {
+                      "value": "{{project_key}}",
+                      "value_type": "text"
+                    }
+                  ]
+                },
+                {
+                  "field_name": "负责人有效",
+                  "operator": "is",
+                  "value": [
+                    {
+                      "value": true,
+                      "value_type": "boolean"
+                    }
+                  ]
+                }
+              ],
+              "conjunction": "and"
+            }
+          ],
+          "table_name": "{{table_name}}",
+          "trigger_control_list": [
+            "pasteUpdate",
+            "automationBatchUpdate",
+            "openAPIBatchUpdate"
+          ]
+        },
+        "id": "taskTrigger",
+        "next": "requestLock",
+        "title": "taskTrigger",
+        "type": "ChangeRecordTrigger"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "待核对"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "正在执行 Linear 请求；若未回写，请先核对 Linear，避免重复建单",
+                  "value_type": "text"
+                }
+              ]
+            },
+            {
+              "field_name": "Linear 创建已尝试",
+              "value": [
+                {
+                  "value": true,
+                  "value_type": "boolean"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "requestLock",
+        "next": "createOrUpdate",
+        "title": "requestLock",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "kind": "case",
+              "label": "branch_1",
+              "desc": "未同步即删除",
+              "to": "skipDeletedCreate"
+            },
+            {
+              "desc": "新建",
+              "kind": "case",
+              "label": "branch_2",
+              "to": "createState"
+            },
+            {
+              "desc": "更新",
+              "kind": "case",
+              "label": "branch_3",
+              "to": "updateState"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": "creationCheck"
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "name": "未同步即删除",
+              "condition": {
+                "conjunction": "or",
+                "conditions": [
+                  {
+                    "conjunction": "and",
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          },
+                          "value": "$.taskTrigger.{{fields.linear_id}}",
+                          "value_type": "ref"
+                        },
+                        "operator": "isEmpty"
+                      },
+                      {
+                        "left_value": {
+                          "value_type": "ref",
+                          "value": "$.taskTrigger.{{fields.state}}",
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          }
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value_type": "text",
+                            "value": "已删除"
+                          }
+                        ]
+                      },
+                      {
+                        "left_value": {
+                          "value_type": "ref",
+                          "value": "$.taskTrigger.{{fields.create_attempted}}",
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          }
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value_type": "boolean",
+                            "value": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          },
+                          "value": "$.taskTrigger.{{fields.linear_id}}",
+                          "value_type": "ref"
+                        },
+                        "operator": "isEmpty"
+                      },
+                      {
+                        "left_value": {
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          },
+                          "value": "$.taskTrigger.{{fields.create_attempted}}",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": false,
+                            "value_type": "boolean"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "新建"
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          },
+                          "value": "$.taskTrigger.{{fields.linear_id}}",
+                          "value_type": "ref"
+                        },
+                        "operator": "isNotEmpty"
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "更新"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "createOrUpdate",
+        "title": "createOrUpdate",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "已完成",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "create0HTTP"
+            },
+            {
+              "desc": "未完成",
+              "kind": "case",
+              "label": "branch_2",
+              "to": "create2HTTP"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          },
+                          "value": "$.taskTrigger.{{fields.state}}",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "已完成",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "已完成"
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          },
+                          "value": "$.taskTrigger.{{fields.state}}",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "未完成",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "未完成"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "createState",
+        "title": "createState",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "body_type": "raw",
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": [
+                {
+                  "value_type": "text",
+                  "value": "YOUR_LINEAR_API_KEY"
+                }
+              ]
+            }
+          ],
+          "method": "POST",
+          "raw_body": [
+            {
+              "value": "{\"query\":\"mutation SyncFeishuTask($create: Boolean!, $id: String!, $input: IssueCreateInput!, $update: IssueUpdateInput!) { created: issueCreate(input: $input) @include(if: $create) { success issue { id identifier url } } updated: issueUpdate(id: $id, input: $update) @skip(if: $create) { success issue { id identifier url } } }\",\"variables\":{\"create\":true,\"id\":\"",
+              "value_type": "text"
+            },
+            {
+              "value": "",
+              "value_type": "text"
+            },
+            {
+              "value": "\",\"input\":{\"teamId\":\"{{linear_team_id}}\",\"assigneeId\":\"{{linear_assignee_id}}\",\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{done_state_id}}\",\"description\":\"",
+              "value_type": "text"
+            },
+            {
+              "value": "来源：飞书项目需求子任务\\n所属需求：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n所属节点：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.node_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n需求链接：{{parent_url_prefix}}",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n飞书任务 ID：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_task_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n来源唯一键：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_key}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\"},\"update\":{\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{done_state_id}}\"}}}",
+              "value_type": "text"
+            }
+          ],
+          "response_type": "json",
+          "response_value": "{\"data\": {\"created\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}, \"updated\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}}, \"errors\": []}",
+          "url": [
+            {
+              "value": "https://api.linear.app/graphql",
+              "value_type": "text"
+            }
+          ]
+        },
+        "id": "create0HTTP",
+        "next": "create0Result",
+        "title": "create0HTTP",
+        "type": "HTTPClientAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "成功",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "create0Success"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": "create0Fail"
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.create0HTTP.status_code",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 200,
+                            "value_type": "number"
+                          }
+                        ]
+                      },
+                      {
+                        "left_value": {
+                          "value": "$.create0HTTP.body.data.created.success",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": true,
+                            "value_type": "boolean"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "成功"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "create0Result",
+        "title": "create0Result",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "Linear ID",
+              "value": [
+                {
+                  "value": "$.create0HTTP.body.data.created.issue.id",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "Linear URL",
+              "value": [
+                {
+                  "value": {
+                    "link": [
+                      {
+                        "value": "$.create0HTTP.body.data.created.issue.url",
+                        "value_type": "ref"
+                      }
+                    ],
+                    "text": [
+                      {
+                        "value": "$.create0HTTP.body.data.created.issue.identifier",
+                        "value_type": "ref"
+                      }
+                    ]
+                  },
+                  "value_type": "link"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "已同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "create0Success",
+        "title": "create0Success",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "失败"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "Linear 请求失败，请检查运行日志后重试；创建时先核对是否已建单",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "create0Fail",
+        "title": "create0Fail",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "body_type": "raw",
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": [
+                {
+                  "value_type": "text",
+                  "value": "YOUR_LINEAR_API_KEY"
+                }
+              ]
+            }
+          ],
+          "method": "POST",
+          "raw_body": [
+            {
+              "value": "{\"query\":\"mutation SyncFeishuTask($create: Boolean!, $id: String!, $input: IssueCreateInput!, $update: IssueUpdateInput!) { created: issueCreate(input: $input) @include(if: $create) { success issue { id identifier url } } updated: issueUpdate(id: $id, input: $update) @skip(if: $create) { success issue { id identifier url } } }\",\"variables\":{\"create\":true,\"id\":\"",
+              "value_type": "text"
+            },
+            {
+              "value": "",
+              "value_type": "text"
+            },
+            {
+              "value": "\",\"input\":{\"teamId\":\"{{linear_team_id}}\",\"assigneeId\":\"{{linear_assignee_id}}\",\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{todo_state_id}}\",\"description\":\"",
+              "value_type": "text"
+            },
+            {
+              "value": "来源：飞书项目需求子任务\\n所属需求：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n所属节点：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.node_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n需求链接：{{parent_url_prefix}}",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n飞书任务 ID：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_task_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n来源唯一键：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_key}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\"},\"update\":{\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{todo_state_id}}\"}}}",
+              "value_type": "text"
+            }
+          ],
+          "response_type": "json",
+          "response_value": "{\"data\": {\"created\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}, \"updated\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}}, \"errors\": []}",
+          "url": [
+            {
+              "value": "https://api.linear.app/graphql",
+              "value_type": "text"
+            }
+          ]
+        },
+        "id": "create2HTTP",
+        "next": "create2Result",
+        "title": "create2HTTP",
+        "type": "HTTPClientAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "成功",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "create2Success"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": "create2Fail"
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.create2HTTP.status_code",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 200,
+                            "value_type": "number"
+                          }
+                        ]
+                      },
+                      {
+                        "left_value": {
+                          "value": "$.create2HTTP.body.data.created.success",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": true,
+                            "value_type": "boolean"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "成功"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "create2Result",
+        "title": "create2Result",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "Linear ID",
+              "value": [
+                {
+                  "value": "$.create2HTTP.body.data.created.issue.id",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "Linear URL",
+              "value": [
+                {
+                  "value": {
+                    "link": [
+                      {
+                        "value": "$.create2HTTP.body.data.created.issue.url",
+                        "value_type": "ref"
+                      }
+                    ],
+                    "text": [
+                      {
+                        "value": "$.create2HTTP.body.data.created.issue.identifier",
+                        "value_type": "ref"
+                      }
+                    ]
+                  },
+                  "value_type": "link"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "已同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "create2Success",
+        "title": "create2Success",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "失败"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "Linear 请求失败，请检查运行日志后重试；创建时先核对是否已建单",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "create2Fail",
+        "title": "create2Fail",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "已完成",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "update0HTTP"
+            },
+            {
+              "desc": "已删除",
+              "kind": "case",
+              "label": "branch_2",
+              "to": "update1HTTP"
+            },
+            {
+              "desc": "未完成",
+              "kind": "case",
+              "label": "branch_3",
+              "to": "update2HTTP"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": ""
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          },
+                          "value": "$.taskTrigger.{{fields.state}}",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "已完成",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "已完成"
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          },
+                          "value": "$.taskTrigger.{{fields.state}}",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "已删除",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "已删除"
+            },
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "extra_info": {
+                            "table_name": "{{table_name}}"
+                          },
+                          "value": "$.taskTrigger.{{fields.state}}",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": "未完成",
+                            "value_type": "text"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "未完成"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "updateState",
+        "title": "updateState",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "body_type": "raw",
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": [
+                {
+                  "value_type": "text",
+                  "value": "YOUR_LINEAR_API_KEY"
+                }
+              ]
+            }
+          ],
+          "method": "POST",
+          "raw_body": [
+            {
+              "value": "{\"query\":\"mutation SyncFeishuTask($create: Boolean!, $id: String!, $input: IssueCreateInput!, $update: IssueUpdateInput!) { created: issueCreate(input: $input) @include(if: $create) { success issue { id identifier url } } updated: issueUpdate(id: $id, input: $update) @skip(if: $create) { success issue { id identifier url } } }\",\"variables\":{\"create\":false,\"id\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.linear_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"input\":{\"teamId\":\"{{linear_team_id}}\",\"assigneeId\":\"{{linear_assignee_id}}\",\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{done_state_id}}\",\"description\":\"",
+              "value_type": "text"
+            },
+            {
+              "value": "来源：飞书项目需求子任务\\n所属需求：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n所属节点：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.node_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n需求链接：{{parent_url_prefix}}",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n飞书任务 ID：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_task_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n来源唯一键：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_key}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\"},\"update\":{\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{done_state_id}}\"}}}",
+              "value_type": "text"
+            }
+          ],
+          "response_type": "json",
+          "response_value": "{\"data\": {\"created\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}, \"updated\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}}, \"errors\": []}",
+          "url": [
+            {
+              "value": "https://api.linear.app/graphql",
+              "value_type": "text"
+            }
+          ]
+        },
+        "id": "update0HTTP",
+        "next": "update0Result",
+        "title": "update0HTTP",
+        "type": "HTTPClientAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "成功",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "update0Success"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": "update0Fail"
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.update0HTTP.status_code",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 200,
+                            "value_type": "number"
+                          }
+                        ]
+                      },
+                      {
+                        "left_value": {
+                          "value": "$.update0HTTP.body.data.updated.success",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": true,
+                            "value_type": "boolean"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "成功"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "update0Result",
+        "title": "update0Result",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "Linear ID",
+              "value": [
+                {
+                  "value": "$.update0HTTP.body.data.updated.issue.id",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "Linear URL",
+              "value": [
+                {
+                  "value": {
+                    "link": [
+                      {
+                        "value": "$.update0HTTP.body.data.updated.issue.url",
+                        "value_type": "ref"
+                      }
+                    ],
+                    "text": [
+                      {
+                        "value": "$.update0HTTP.body.data.updated.issue.identifier",
+                        "value_type": "ref"
+                      }
+                    ]
+                  },
+                  "value_type": "link"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "已同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "update0Success",
+        "title": "update0Success",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "失败"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "Linear 请求失败，请检查运行日志后重试；创建时先核对是否已建单",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "update0Fail",
+        "title": "update0Fail",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "body_type": "raw",
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": [
+                {
+                  "value_type": "text",
+                  "value": "YOUR_LINEAR_API_KEY"
+                }
+              ]
+            }
+          ],
+          "method": "POST",
+          "raw_body": [
+            {
+              "value": "{\"query\":\"mutation SyncFeishuTask($create: Boolean!, $id: String!, $input: IssueCreateInput!, $update: IssueUpdateInput!) { created: issueCreate(input: $input) @include(if: $create) { success issue { id identifier url } } updated: issueUpdate(id: $id, input: $update) @skip(if: $create) { success issue { id identifier url } } }\",\"variables\":{\"create\":false,\"id\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.linear_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"input\":{\"teamId\":\"{{linear_team_id}}\",\"assigneeId\":\"{{linear_assignee_id}}\",\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{canceled_state_id}}\",\"description\":\"",
+              "value_type": "text"
+            },
+            {
+              "value": "来源：飞书项目需求子任务\\n所属需求：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n所属节点：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.node_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n需求链接：{{parent_url_prefix}}",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n飞书任务 ID：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_task_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n来源唯一键：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_key}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\"},\"update\":{\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{canceled_state_id}}\"}}}",
+              "value_type": "text"
+            }
+          ],
+          "response_type": "json",
+          "response_value": "{\"data\": {\"created\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}, \"updated\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}}, \"errors\": []}",
+          "url": [
+            {
+              "value": "https://api.linear.app/graphql",
+              "value_type": "text"
+            }
+          ]
+        },
+        "id": "update1HTTP",
+        "next": "update1Result",
+        "title": "update1HTTP",
+        "type": "HTTPClientAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "成功",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "update1Success"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": "update1Fail"
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.update1HTTP.status_code",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 200,
+                            "value_type": "number"
+                          }
+                        ]
+                      },
+                      {
+                        "left_value": {
+                          "value": "$.update1HTTP.body.data.updated.success",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": true,
+                            "value_type": "boolean"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "成功"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "update1Result",
+        "title": "update1Result",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "Linear ID",
+              "value": [
+                {
+                  "value": "$.update1HTTP.body.data.updated.issue.id",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "Linear URL",
+              "value": [
+                {
+                  "value": {
+                    "link": [
+                      {
+                        "value": "$.update1HTTP.body.data.updated.issue.url",
+                        "value_type": "ref"
+                      }
+                    ],
+                    "text": [
+                      {
+                        "value": "$.update1HTTP.body.data.updated.issue.identifier",
+                        "value_type": "ref"
+                      }
+                    ]
+                  },
+                  "value_type": "link"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "已同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "update1Success",
+        "title": "update1Success",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "失败"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "Linear 请求失败，请检查运行日志后重试；创建时先核对是否已建单",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "update1Fail",
+        "title": "update1Fail",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "body_type": "raw",
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": [
+                {
+                  "value_type": "text",
+                  "value": "YOUR_LINEAR_API_KEY"
+                }
+              ]
+            }
+          ],
+          "method": "POST",
+          "raw_body": [
+            {
+              "value": "{\"query\":\"mutation SyncFeishuTask($create: Boolean!, $id: String!, $input: IssueCreateInput!, $update: IssueUpdateInput!) { created: issueCreate(input: $input) @include(if: $create) { success issue { id identifier url } } updated: issueUpdate(id: $id, input: $update) @skip(if: $create) { success issue { id identifier url } } }\",\"variables\":{\"create\":false,\"id\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.linear_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"input\":{\"teamId\":\"{{linear_team_id}}\",\"assigneeId\":\"{{linear_assignee_id}}\",\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{todo_state_id}}\",\"description\":\"",
+              "value_type": "text"
+            },
+            {
+              "value": "来源：飞书项目需求子任务\\n所属需求：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n所属节点：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.node_name}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n需求链接：{{parent_url_prefix}}",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.parent_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n飞书任务 ID：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_task_id}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\\n来源唯一键：",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.source_key}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\"},\"update\":{\"title\":\"",
+              "value_type": "text"
+            },
+            {
+              "extra_info": {
+                "table_name": "{{table_name}}"
+              },
+              "value": "$.taskTrigger.{{fields.title}}",
+              "value_type": "ref"
+            },
+            {
+              "value": "\",\"stateId\":\"{{todo_state_id}}\"}}}",
+              "value_type": "text"
+            }
+          ],
+          "response_type": "json",
+          "response_value": "{\"data\": {\"created\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}, \"updated\": {\"success\": true, \"issue\": {\"id\": \"sample\", \"identifier\": \"POP-TEST\", \"url\": \"https://linear.app/sample\"}}}, \"errors\": []}",
+          "url": [
+            {
+              "value": "https://api.linear.app/graphql",
+              "value_type": "text"
+            }
+          ]
+        },
+        "id": "update2HTTP",
+        "next": "update2Result",
+        "title": "update2HTTP",
+        "type": "HTTPClientAction"
+      },
+      {
+        "children": {
+          "links": [
+            {
+              "desc": "成功",
+              "kind": "case",
+              "label": "branch_1",
+              "to": "update2Success"
+            },
+            {
+              "desc": "默认分支",
+              "kind": "case",
+              "label": "default",
+              "to": "update2Fail"
+            }
+          ]
+        },
+        "data": {
+          "child_branch_list": [
+            {
+              "condition": {
+                "conditions": [
+                  {
+                    "conditions": [
+                      {
+                        "left_value": {
+                          "value": "$.update2HTTP.status_code",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": 200,
+                            "value_type": "number"
+                          }
+                        ]
+                      },
+                      {
+                        "left_value": {
+                          "value": "$.update2HTTP.body.data.updated.success",
+                          "value_type": "ref"
+                        },
+                        "operator": "is",
+                        "right_value": [
+                          {
+                            "value": true,
+                            "value_type": "boolean"
+                          }
+                        ]
+                      }
+                    ],
+                    "conjunction": "and"
+                  }
+                ],
+                "conjunction": "or"
+              },
+              "name": "成功"
+            }
+          ],
+          "mode": "exclusive",
+          "no_match_action": "classifyToOther"
+        },
+        "id": "update2Result",
+        "title": "update2Result",
+        "type": "SwitchBranch"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "Linear ID",
+              "value": [
+                {
+                  "value": "$.update2HTTP.body.data.updated.issue.id",
+                  "value_type": "ref"
+                }
+              ]
+            },
+            {
+              "field_name": "Linear URL",
+              "value": [
+                {
+                  "value": {
+                    "link": [
+                      {
+                        "value": "$.update2HTTP.body.data.updated.issue.url",
+                        "value_type": "ref"
+                      }
+                    ],
+                    "text": [
+                      {
+                        "value": "$.update2HTTP.body.data.updated.issue.identifier",
+                        "value_type": "ref"
+                      }
+                    ]
+                  },
+                  "value_type": "link"
+                }
+              ]
+            },
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "已同步"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "update2Success",
+        "title": "update2Success",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "失败"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "Linear 请求失败，请检查运行日志后重试；创建时先核对是否已建单",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "update2Fail",
+        "title": "update2Fail",
+        "type": "SetRecordAction"
+      },
+      {
+        "children": {
+          "links": []
+        },
+        "data": {
+          "field_values": [
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value": {
+                    "name": "待核对"
+                  },
+                  "value_type": "option"
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value": "创建已尝试但 Linear ID 未回写；先核对 Linear，禁止自动重复建单",
+                  "value_type": "text"
+                }
+              ]
+            }
+          ],
+          "filter_info": null,
+          "max_set_record_num": 1,
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "table_name": "{{table_name}}"
+        },
+        "id": "creationCheck",
+        "title": "creationCheck",
+        "type": "SetRecordAction"
+      },
+      {
+        "id": "skipDeletedCreate",
+        "type": "SetRecordAction",
+        "title": "保留未同步任务的删除标记",
+        "data": {
+          "table_name": "{{table_name}}",
+          "ref_info": {
+            "step_id": "taskTrigger"
+          },
+          "max_set_record_num": 1,
+          "field_values": [
+            {
+              "field_name": "同步状态",
+              "value": [
+                {
+                  "value_type": "option",
+                  "value": {
+                    "name": "停止同步"
+                  }
+                }
+              ]
+            },
+            {
+              "field_name": "Linear 创建已尝试",
+              "value": [
+                {
+                  "value_type": "boolean",
+                  "value": false
+                }
+              ]
+            },
+            {
+              "field_name": "同步错误",
+              "value": [
+                {
+                  "value_type": "text",
+                  "value": "来源已删除且从未尝试创建 Linear；保留删除标记，不创建新 Issue"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

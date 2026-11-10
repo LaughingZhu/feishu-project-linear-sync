@@ -1,0 +1,22 @@
+{
+  "table_name": "需求任务同步",
+  "project_key": "SET_ME",
+  "owner_key": "SET_ME",
+  "linear_team_id": "SET_ME",
+  "linear_assignee_id": "SET_ME",
+  "todo_state_id": "SET_ME",
+  "done_state_id": "SET_ME",
+  "canceled_state_id": "SET_ME",
+  "parent_url_prefix": "SET_ME",
+  "fields": {
+    "source_key": "SET_ME",
+    "title": "SET_ME",
+    "node_name": "SET_ME",
+    "linear_id": "SET_ME",
+    "create_attempted": "SET_ME",
+    "source_task_id": "SET_ME",
+    "state": "SET_ME",
+    "parent_name": "SET_ME",
+    "parent_id": "SET_ME"
+  }
+}
